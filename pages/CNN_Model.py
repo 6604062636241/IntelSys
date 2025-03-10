@@ -13,6 +13,7 @@ gdown.download(f"https://drive.google.com/uc?id={file_id}", output, quiet=False)
 
 model = tf.keras.models.load_model("food101_model.h5")
 
+model.summary()
 class_names_file = "classes.txt"
 with open(class_names_file, "r") as file:
     class_names = [line.strip() for line in file.readlines()]
@@ -25,6 +26,7 @@ def predict_image(img):
     img_array = np.expand_dims(img_array, axis=0) 
 
     prediction = model.predict(img_array)
+    print(prediction)
     predicted_class = class_names[np.argmax(prediction)]
     confidence = np.max(prediction)  
 
