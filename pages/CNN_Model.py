@@ -4,6 +4,7 @@ import tensorflow as tf
 import numpy as np
 import gdown
 from tensorflow.keras.preprocessing import image
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 st.set_page_config(page_title="Neural Network Model", layout="wide")
 
@@ -12,6 +13,11 @@ output = "food101_model.h5"
 
 gdown.download(f"https://drive.google.com/uc?id={file_id}", output, quiet=False)
 model = tf.keras.models.load_model("food101_model.h5")
+
+
+class_names_file = "classes.txt"
+with open(class_names_file, "r") as file:
+    class_names = [line.strip() for line in file.readlines()]
 
 def predict_image(img):
     img = img.resize((224, 224))
@@ -30,7 +36,7 @@ uploaded_file = st.file_uploader("Upload your picture", type=["jpg", "png", "jpe
 
 if uploaded_file is not None:
     img = image.load_img(uploaded_file, target_size=(224, 224))
-    st.image(img, caption="Uploaded successful", use_column_width=True)
+    st.image(img, caption="Uploaded successfully", use_column_width=True)
 
     result, conf = predict_image(img)
     st.write(f"Predicted class: {result}")
