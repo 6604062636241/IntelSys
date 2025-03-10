@@ -2,3 +2,4 @@ joblib
 scikit-learn
 streamlit
 kaggle
+tensorflow
