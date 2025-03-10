@@ -2,11 +2,16 @@ import os
 import streamlit as st
 import tensorflow as tf
 import numpy as np
+import gdown
 from tensorflow.keras.preprocessing import image
 
 st.set_page_config(page_title="Neural Network Model", layout="wide")
 
-model = tf.keras.models.load_model("food101_model.keras")
+file_id = "1Sq71teUnGS7yseEdSLErvE3rA5rEfvmS"
+output = "food101_model.h5"
+
+gdown.download(f"https://drive.google.com/uc?id={file_id}", output, quiet=False)
+model = tf.keras.models.load_model("food101_model.h5")
 
 def predict_image(img):
     img = img.resize((224, 224))
