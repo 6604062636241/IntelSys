@@ -36,7 +36,7 @@ uploaded_file = st.file_uploader("Upload your picture", type=["jpg", "png", "jpe
 
 if uploaded_file is not None:
     img = image.load_img(uploaded_file, target_size=(224, 224))
-    st.image(img, caption="Uploaded successfully", use_column_width=True)
+    st.image(img, caption="Uploaded successfully", use_container_width=True)
 
     result, conf = predict_image(img)
     st.write(f"Predicted class: {result}")
