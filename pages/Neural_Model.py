@@ -7,8 +7,7 @@ from tensorflow.keras.preprocessing import image
 
 st.set_page_config(page_title="Neural Network Model", layout="wide")
 
-output = "food101_model.h5"
-gdown.download("https://drive.google.com/uc?id=1uDyqphczWGPxI-cOv_bhiQ9IyUzp_-gz", output, quiet=False)
+gdown.download("https://drive.google.com/uc?id=1uDyqphczWGPxI-cOv_bhiQ9IyUzp_-gz", "food101_model.h5", quiet=False)
 
 model = tf.keras.models.load_model("food101_model.h5")
 
