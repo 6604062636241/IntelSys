@@ -30,7 +30,7 @@ def predict_image(img):
 
     return predicted_class, confidence
 
-st.title("Food Prediction")
+st.title("Food Predict")
 
 uploaded_file = st.file_uploader("Upload your picture", type=["jpg", "png", "jpeg"])
 

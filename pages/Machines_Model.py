@@ -18,7 +18,7 @@ except Exception as e:
     st.error(f"Error loading model: {e}")
     st.stop()
 
-st.title("Income Prediction Comparison")
+st.title("Income Predict Comparison")
 
 def decode_labels(col, encoded_values):
     encoder = encoder_dict.get(col)
