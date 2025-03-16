@@ -4,8 +4,8 @@ import pandas as pd
 import gdown
 
 try:
-    gdown.download("https://drive.google.com/uc?id=1tfyV__6kbfgYjhtelc9dM3yJqAlgKD_d",'random_forest_model.pkl', quiet=False)
-    svm_model = joblib.load('svm_model.pkl')
+    if not os.path.exists('random_forest_model.pkl'):
+        gdown.download("https://drive.google.com/uc?id=1tfyV__6kbfgYjhtelc9dM3yJqAlgKD_d", 'random_forest_model.pkl', quiet=False)
     rf_model = joblib.load('random_forest_model.pkl') 
     scaler = joblib.load('scaler.pkl')  
     encoder_dict = joblib.load('encoders.pkl')
