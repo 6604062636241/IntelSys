@@ -9,6 +9,7 @@ try:
         with st.spinner('Downloading model...'):
             gdown.download("https://drive.google.com/uc?id=1tfyV__6kbfgYjhtelc9dM3yJqAlgKD_d", 'random_forest_model.pkl', quiet=False)
     rf_model = joblib.load('random_forest_model.pkl') 
+    svm_model = joblib.load('svm_model.pkl')
     scaler = joblib.load('scaler.pkl')  
     encoder_dict = joblib.load('encoders.pkl')
     target_encoder = joblib.load('target_encoder.pkl')
@@ -54,14 +55,24 @@ def preprocess_input(input_df):
 def make_predictions(input_data):
     processed_input = preprocess_input(input_data)
     if processed_input is not None:
+        svm_prediction = svm_model.predict(processed_input.values)
+        svm_result = target_encoder.inverse_transform(svm_prediction)
+        svm_result_text = "Income > 50K" if svm_result == 1 else "Income <= 50K"
+        
         rf_prediction = rf_model.predict(processed_input.values)
         rf_result = target_encoder.inverse_transform(rf_prediction)
         rf_result_text = "Income > 50K" if rf_result == 1 else "Income <= 50K"
         
-        return rf_result_text
+        return svm_result_text, rf_result_text
+
+st.header("SVM Model Input")
+svm_input_data = collect_input()
+if st.button('Predict with SVM'):
+    svm_result_text, _ = make_predictions(svm_input_data)
+    st.success(f"SVM Prediction: {svm_result_text}")
 
 st.header("Random Forest Model Input")
 rf_input_data = collect_input()
 if st.button('Predict with Random Forest'):
-    rf_result_text = make_predictions(rf_input_data)
+    _, rf_result_text = make_predictions(rf_input_data)
     st.success(f"Random Forest Prediction: {rf_result_text}")
