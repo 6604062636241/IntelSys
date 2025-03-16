@@ -2,6 +2,7 @@ import streamlit as st
 import joblib
 import pandas as pd
 import gdown
+import os
 
 try:
     if not os.path.exists('random_forest_model.pkl'):
