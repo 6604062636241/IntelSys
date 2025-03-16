@@ -1,0 +1,73 @@
+import pandas as pd
+import joblib
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.model_selection import train_test_split, GridSearchCV, cross_val_score
+from sklearn.metrics import accuracy_score, classification_report
+from imblearn.over_sampling import SMOTE
+
+df = pd.read_csv("adult.csv")
+
+selected_columns = ['age', 'workclass', 'education', 'marital.status', 'occupation',
+                    'relationship', 'race', 'native.country', 'income']
+df = df[selected_columns]
+
+df = df.dropna()
+
+categorical_columns = ['workclass', 'education', 'marital.status', 'occupation', 
+                       'relationship', 'race', 'native.country']
+encoder_dict = {}
+
+for col in categorical_columns:
+    encoder = LabelEncoder()
+    df[col] = encoder.fit_transform(df[col])
+    encoder_dict[col] = encoder
+
+target_encoder = LabelEncoder()
+df['income'] = target_encoder.fit_transform(df['income'])
+
+scaler = StandardScaler()
+
+X = df.drop(columns=['income'])
+y = df['income']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
+
+X_train[['age']] = scaler.fit_transform(X_train[['age']])
+X_test[['age']] = scaler.transform(X_test[['age']])
+
+smote = SMOTE(sampling_strategy='minority', random_state=42)
+X_train_resampled, y_train_resampled = smote.fit_resample(X_train, y_train)
+
+param_grid = {
+    'n_estimators': [100, 200, 300], 
+    'max_depth': [10, 15, 20],       
+    'min_samples_split': [2, 5, 10],  
+    'min_samples_leaf': [1, 2, 4],    
+}
+
+rf_model = RandomForestClassifier(class_weight='balanced_subsample', random_state=42)
+grid_search = GridSearchCV(rf_model, param_grid, cv=5, scoring='accuracy', n_jobs=-1)
+grid_search.fit(X_train_resampled, y_train_resampled)
+best_rf_model = grid_search.best_estimator_
+
+cv_scores = cross_val_score(best_rf_model, X_train_resampled, y_train_resampled, cv=5)
+print(f"Cross-Validation Accuracy: {cv_scores.mean() * 100:.2f}%")
+
+train_predictions = best_rf_model.predict(X_train_resampled)
+train_accuracy = accuracy_score(y_train_resampled, train_predictions)
+print(f"Training Accuracy: {train_accuracy * 100:.2f}%")
+
+test_predictions = best_rf_model.predict(X_test)
+test_accuracy = accuracy_score(y_test, test_predictions)
+print(f"Testing Accuracy: {test_accuracy * 100:.2f}%")
+
+feature_importance = pd.Series(best_rf_model.feature_importances_, index=X.columns)
+print("\nFeature Importance:\n", feature_importance.sort_values(ascending=False))
+
+print("\nClassification Report:\n", classification_report(y_test, test_predictions))
+
+joblib.dump(best_rf_model, 'random_forest_model.pkl')
+joblib.dump(scaler, 'scaler.pkl')
+joblib.dump(encoder_dict, 'encoders.pkl')
+joblib.dump(target_encoder, 'target_encoder.pkl')
+joblib.dump(X_train.columns.tolist(), 'feature_names.pkl')

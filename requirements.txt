@@ -4,3 +4,5 @@ streamlit
 kaggle
 tensorflow
 gdown
+imbalanced-learn
+fsspec
